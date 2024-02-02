@@ -45,7 +45,7 @@ namespace Zip.WebAPI.Services
             if (!responseValidator.IsValid)
             {
                 _logger.LogError("AcountService-CreateAcountAsync : User is not valid for creating an acount ");
-                response.AddError(ResponseCode.InternalError.ToString(), "User has no credit to make an acount.");
+                response.AddError(ResponseCode.BadRequest.ToString(), "User has no credit to make an acount.");
                 return response;
             }
             var acount = _mapper.Map<Acount>(acountDto);

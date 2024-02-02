@@ -50,6 +50,10 @@ namespace Zip.WebAPI.Controllers
                 {
                     return NotFound(response.ErrorMessages);
                 }
+                if (errorCode == ResponseCode.BadRequest.ToString())
+                {
+                    return BadRequest(response.ErrorMessages);
+                }
             }
 
             return Ok(response.Data);
