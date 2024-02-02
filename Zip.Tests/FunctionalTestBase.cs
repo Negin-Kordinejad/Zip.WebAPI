@@ -11,8 +11,6 @@ namespace Zip.Tests
 {
     public class FunctionalTestBase
     {
-       // private readonly Mock<IMapper> _mapper = new Mock<IMapper>();
-
         private readonly Mock<ILogger<UserService>> _loggerUser = new Mock<ILogger<UserService>>();
         protected readonly Mock<IUserRepository> _userRepository = new Mock<IUserRepository>();
 
