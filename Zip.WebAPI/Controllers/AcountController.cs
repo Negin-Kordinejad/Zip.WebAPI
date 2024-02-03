@@ -33,9 +33,14 @@ namespace Zip.WebAPI.Controllers
                 {
                     return NotFound(response.ErrorMessages);
                 }
+
+                if (errorCode == ResponseCode.BadRequest.ToString())
+                {
+                    return BadRequest(response.ErrorMessages);
+                }
             }
 
-            return Ok(response.Data);
+            return Ok(response);
         }
 
         [HttpPost("Create")]
@@ -56,7 +61,7 @@ namespace Zip.WebAPI.Controllers
                 }
             }
 
-            return Ok(response.Data);
+            return Ok(response);
         }
     }
 }

@@ -69,6 +69,23 @@ namespace Zip.WebAPI.Services
             return response;
         }
 
+        public async Task<Response<UserAcountDto>> GetUserByEmailAsync(string email)
+        {
+            var response = new Response<UserAcountDto>();
+            var result = await _userRepository.GetByUserByEmailAsync(email);
+            if (result == null)
+            {
+                _logger.LogError("UserService-GetUsersAsync : No user found");
+                response.AddError(ResponseCode.NotFound.ToString(), "No user found");
+            }
+            else
+            {
+                response.Data = GetUserAcount(result);
+            }
+
+            return response;
+        }
+
         public async Task<Response<List<UserDto>>> GetUsersAsync()
         {
             var response = new Response<List<UserDto>>();
@@ -84,6 +101,16 @@ namespace Zip.WebAPI.Services
             }
 
             return response;
+        }
+
+        private UserAcountDto GetUserAcount(User result)
+        {
+            return new UserAcountDto
+            {
+                Name = result.Name,
+                Email = result.Email,
+                Acounts = _mapper.Map<List<AcountDto>>(result.Acounts)
+            };
         }
     }
 }

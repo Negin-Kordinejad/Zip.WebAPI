@@ -8,6 +8,7 @@ namespace Zip.WebAPI.Services
     public interface IUserService
     {
         Task<Response<UserDto>> GetUserByIdAsync(int id);
+        Task<Response<UserAcountDto>> GetUserByEmailAsync(string email);
         Task<Response<List<UserDto>>> GetUsersAsync();
         Task<Response<UserDto>> CreateUserAsync(UserDto user);
         Task DeleteUserAsync(int id);
