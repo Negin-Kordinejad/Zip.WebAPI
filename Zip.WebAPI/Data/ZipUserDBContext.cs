@@ -9,7 +9,8 @@ namespace Zip.WebAPI.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite("DataSource=:memory:", x => { });
+            optionsBuilder.UseSqlServer("Data Source=(localDb)\\MSSQLLocalDb;initial Catalog=ZipUserManagement");
+           // optionsBuilder.UseSqlite("DataSource=:memory:", x => { });
             // optionsBuilder.UseInMemoryDatabase("ZipAcount");
         }
         public DbSet<User> Users { get; set; }

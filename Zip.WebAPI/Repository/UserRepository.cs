@@ -35,7 +35,14 @@ namespace Zip.WebAPI.Repository
 
         public async Task<User> GetByIdAsync(int id)
         {
-            return await _zipUserDBContext.Users.Where(user => user.Id == id).FirstOrDefaultAsync();
+            var user =await _zipUserDBContext.Users.Where(user => user.Id == id).FirstOrDefaultAsync();
+            return user;
+        }
+
+        public async Task<User> GetByUserByEmailAsync(string Email)
+        {
+            return await _zipUserDBContext.Users.Where(user => user.Email == Email)
+                .Include(_=>_.Acounts).FirstOrDefaultAsync();
         }
 
         public async Task<List<User>> GetUsersAsync()
