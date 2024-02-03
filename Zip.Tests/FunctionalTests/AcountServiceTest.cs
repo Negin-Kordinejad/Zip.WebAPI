@@ -51,7 +51,7 @@ namespace Zip.Tests.Functional
             {
                 return new[]
                 {
-                   new object[]{ new AcountDto { Id = 10, UserId = UserFixtures.CreditUserId2NoAcount.Id, Type = AcountType.Credit.ToString() } },
+                   new object[]{ new AcountDto { UserId = UserFixtures.CreditUserId2NoAcount.Id, Type = AcountType.Credit.ToString() } },
                 };
             }
         }
@@ -61,7 +61,7 @@ namespace Zip.Tests.Functional
             {
                 return new[]
                 {
-                    new object[]{ new AcountDto{Id=10, UserId=UserFixtures.NoCreditUserId1NoAcount.Id,Type= AcountType.Choice.ToString()} },
+                    new object[]{ new AcountDto{ UserId=UserFixtures.NoCreditUserId1NoAcount.Id,Type= AcountType.Choice.ToString()} },
                 };
             }
         }

@@ -21,8 +21,8 @@ namespace Zip.WebAPI.Services
         {
             var result = new ValidateUserCreditResponseData { IsValid = false };
             _logger.LogInformation("CreditValidator_ValidateAsync attemting....");
-            var response = await _userService.GetUserByIdAsync(userId);
 
+            var response = await _userService.GetUserByIdAsync(userId);
             if (response == null || !response.IsSuccessful || !HashCredit(response.Data))
             {
                 result.IsValid = false;

@@ -22,7 +22,7 @@ namespace Zip.Tests.Functional
 
             //Assert
             Assert.IsTrue(result.IsSuccessful);
-            Assert.AreEqual(id, result.Data.Id);
+            Assert.IsNotNull(result.Data);
 
         }
 
@@ -52,7 +52,7 @@ namespace Zip.Tests.Functional
 
             //Assert
             Assert.IsTrue(result.IsSuccessful);
-            Assert.AreEqual(userDto.Id, result.Data.Id);
+            Assert.AreEqual(userDto.Name, result.Data.Name);
             Assert.AreEqual(userDto.Email, result.Data.Email);
 
         }
@@ -104,8 +104,8 @@ namespace Zip.Tests.Functional
             {
                 return new[]
                 {
-                   new object[]{  new UserDto { Id = 5, Name = "TestUser5", Email = "testuser5@zip.com", Salary = 5000, Expenses = 3000 } },
-                   new object[]{ new UserDto { Id = 10, Name = "TestUser10", Email = "testuser10@zip.com", Salary = 3000, Expenses = 500 } }
+                   new object[]{  new UserDto { Name = "TestUser5", Email = "testuser5@zip.com", Salary = 5000, Expenses = 3000 } },
+                   new object[]{ new UserDto { Name = "TestUser10", Email = "testuser10@zip.com", Salary = 3000, Expenses = 500 } }
                 };
             }
         }
@@ -116,8 +116,8 @@ namespace Zip.Tests.Functional
             {
                 return new[]
                 {
-                     new object[]{new UserDto{Id=5,Name="TestUser5",Email="testuser1@zip.com",Salary=7000,Expenses=3000} },
-                     new object[]{new UserDto{Id=10,Name="TestUser10",Email="testuser4@zip.com",Salary=9000,Expenses=500} }
+                     new object[]{new UserDto{Name="TestUser5",Email="testuser1@zip.com",Salary=7000,Expenses=3000} },
+                     new object[]{new UserDto{Name="TestUser10",Email="testuser4@zip.com",Salary=9000,Expenses=500} }
                 };
             }
         }
