@@ -7,7 +7,7 @@ namespace Zip.WebAPI.Repository
     public interface IAcountRepository
     {
         Task<Acount> CreateAsync(Acount acount );
-        Task<List<Acount>> GetAcountsByUserIdAsync(int userId);
+        Task<List<Acount>> GetByUserEmailAsync(string email);
 
     }
 }

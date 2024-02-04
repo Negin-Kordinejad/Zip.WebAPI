@@ -37,9 +37,9 @@ namespace Zip.Tests.Fixtures
             return acount;
         }
 
-        internal static List<Acount> GetAcountsByUserId(int userId)
+        internal static List<Acount> GetAcountsByUserId(string email)
         {
-            return acounts.Where(u => u.UserId == userId).ToList();
+            return acounts.Where(u => u.User.Email.ToLower() == email.ToLower()).ToList();
         }
         private static Fixture GetFixture()
         {

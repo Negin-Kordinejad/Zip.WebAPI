@@ -7,10 +7,9 @@ namespace Zip.WebAPI.Repository
     public interface IUserRepository
     {
         Task<User> GetByIdAsync(int id);
-        Task<User> GetByUserByEmailAsync(string Email);
-        Task<List<User>> GetUsersAsync();
+        Task<User> GetByEmailAsync(string email);
+        Task<List<User>> GetAllAsync();
         Task<User> CreateAsync(User user );
-        Task DeleteAsync(int id);
-
+        Task DeleteAsync(string id);
     }
 }

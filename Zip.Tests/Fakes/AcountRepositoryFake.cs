@@ -17,12 +17,11 @@ namespace Zip.Tests.Fakes
             return instance;
         }
 
-
         internal static Mock<IAcountRepository> ConfigureGetUsersAsyncToReturnUsers(
-           this Mock<IAcountRepository> instance, int userId)
+           this Mock<IAcountRepository> instance, string email)
         {
-            instance.Setup(x => x.GetAcountsByUserIdAsync(It.Is<int>(u => u == userId)))
-                .ReturnsAsync(() => AcountFixtures.GetAcountsByUserId(userId));
+            instance.Setup(x => x.GetByUserEmailAsync(It.Is<string>(u => u.ToLower() == email.ToLower())))
+                .ReturnsAsync(() => AcountFixtures.GetAcountsByUserId(email));
 
             return instance;
         }

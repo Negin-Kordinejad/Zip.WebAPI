@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using Zip.WebAPI.Models.Dto;
 using Zip.WebAPI.Models.Enums;
-using Zip.WebAPI.Models.Responses;
 using Zip.WebAPI.Services;
 
 namespace Zip.WebAPI.Controllers
@@ -33,33 +32,28 @@ namespace Zip.WebAPI.Controllers
                 {
                     return NotFound(response.ErrorMessages);
                 }
-               
+
             }
             return Ok(response);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        [HttpGet("{emailAddress}")]
+        public async Task<IActionResult> GetByEmailAddressId(string emailAddress)
         {
-            var result = await _userService.GetUserByIdAsync(id);
-            if (result.IsSuccessful == false)
+            var response = await _userService.GetUserByEmailAsync(emailAddress);
+            if (response.IsSuccessful == false)
             {
-                return BadRequest(result.ErrorMessages);
+                string errorCode = response.ErrorMessages[0].ErrorCode;
+
+                if (errorCode == ResponseCode.NotFound.ToString())
+                {
+                    return NotFound(response.ErrorMessages);
+                }
+
+                return BadRequest(response.ErrorMessages);
             }
 
-            return Ok(result);
-        }
-
-        [HttpGet("EmailAddress{email}")]
-        public async Task<IActionResult> GetByEmailAddressId(string email)
-        {
-            var result = await _userService.GetUserByEmailAsync(email);
-            if (result.IsSuccessful == false)
-            {
-                return BadRequest(result.ErrorMessages);
-            }
-
-            return Ok(result);
+            return Ok(response);
         }
 
         [HttpPost("Add")]
@@ -75,9 +69,9 @@ namespace Zip.WebAPI.Controllers
         }
 
         [HttpPost("Remove")]
-        public async Task DeleteUser(int id)
+        public async Task DeleteUser(string emailAddress)
         {
-            await _userService.DeleteUserAsync(id);
+            await _userService.DeleteUserAsync(emailAddress);
         }
     }
 }

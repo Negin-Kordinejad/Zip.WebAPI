@@ -6,7 +6,6 @@ namespace Zip.WebAPI.Models.Dto
     {
         public string Name { get; set; }
         public string Email { get; set; }
-        public List<AcountDto> Acounts { get; set; }
-
+        public List<AcountTypeDto> Acounts { get; set; }
     }
 }

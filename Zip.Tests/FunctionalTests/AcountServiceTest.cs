@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Zip.Tests.Fakes;
 using Zip.Tests.Fixtures;
@@ -13,29 +14,30 @@ namespace Zip.Tests.Functional
     public class AcountServiceTest : FunctionalTestBase
     {
         [TestMethod]
-        [DynamicData(nameof(ApplyDateForAcountWithCreditTestCases))]
-        public async Task CreateAcountAsync_WHEN_USER_HAS_CREDIT_ReturnSuccessFulResponce(AcountDto acountDto)
+        [DynamicData(nameof(ApplyDataForAcountWithCreditTestCases))]
+        public async Task CreateAcountAsync_WHEN_USER_HAS_CREDIT_ReturnSuccessFulResponce(AcountCreateDto acountDto)
         {
             //Arrange
-            var acount = Mapper.Map<Acount>(acountDto);
+            var acount = new Acount { UserId = UserFixtures.Users.FirstOrDefault(u => u.Email == acountDto.Email).Id, Type = acountDto.Type };
             _acountRepository.ConfigureCreateAsyncToReturnAcount(acount);
+            _userRepository.ConfigureGetUserByEmailAsyncToReturnUser(acountDto.Email);
             _creditValidator.ConfigureValidateAsyncToReturnRespoce(true);
             //Act
             var result = await AcountService.CreateAcountAsync(acountDto);
 
             //Assert
             Assert.IsTrue(result.IsSuccessful);
-            Assert.AreEqual(acountDto.UserId, result.Data.UserId);
-
+            Assert.AreEqual(acountDto.Type, result.Data.Type);
         }
 
         [TestMethod]
-        [DynamicData(nameof(ApplyDateForAcountWithNoCreditTestCases))]
-        public async Task CreateAcountAsync_WHEN_USER_HAS_NO_CREDIT_ReturnUnSuccessFuk(AcountDto acountDto)
+        [DynamicData(nameof(ApplyDataForAcountWithNoCreditTestCases))]
+        public async Task CreateAcountAsync_WHEN_USER_HAS_NO_CREDIT_ReturnUnSuccessFuk(AcountCreateDto acountDto)
         {
             //Arrange
-            var acount = Mapper.Map<Acount>(acountDto);
+            var acount = new Acount { UserId = UserFixtures.Users.FirstOrDefault(u => u.Email == acountDto.Email).Id, Type = acountDto.Type };
             _acountRepository.ConfigureCreateAsyncToReturnAcount(acount);
+            _userRepository.ConfigureGetUserByEmailAsyncToReturnUser(acountDto.Email);
             _creditValidator.ConfigureValidateAsyncToReturnRespoce(false);
             //Act
             var result = await AcountService.CreateAcountAsync(acountDto);
@@ -44,28 +46,25 @@ namespace Zip.Tests.Functional
             Assert.IsFalse(result.IsSuccessful);
         }
 
-
-        private static IEnumerable<object[]> ApplyDateForAcountWithCreditTestCases
+        private static IEnumerable<object[]> ApplyDataForAcountWithCreditTestCases
         {
             get
             {
                 return new[]
                 {
-                   new object[]{ new AcountDto { UserId = UserFixtures.CreditUserId2NoAcount.Id, Type = AcountType.Credit.ToString() } },
+                   new object[]{ new AcountCreateDto { Email = UserFixtures.CreditUserId2NoAcount.Email, Type = AcountType.Credit.ToString() } },
                 };
             }
         }
-        private static IEnumerable<object[]> ApplyDateForAcountWithNoCreditTestCases
+        private static IEnumerable<object[]> ApplyDataForAcountWithNoCreditTestCases
         {
             get
             {
                 return new[]
                 {
-                    new object[]{ new AcountDto{ UserId=UserFixtures.NoCreditUserId1NoAcount.Id,Type= AcountType.Choice.ToString()} },
+                    new object[]{ new AcountCreateDto{ Email= UserFixtures.NoCreditUserId1NoAcount.Email, Type= AcountType.Choice.ToString()} },
                 };
             }
         }
-
-
     }
 }

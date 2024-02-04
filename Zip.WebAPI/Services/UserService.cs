@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Zip.WebAPI.Extentions;
 using Zip.WebAPI.Models;
 using Zip.WebAPI.Models.Dto;
 using Zip.WebAPI.Models.Enums;
@@ -30,14 +31,18 @@ namespace Zip.WebAPI.Services
             if (userDto == null)
             {
                 _logger.LogError("UserService-CreateUserAsync : ");
-                throw new ArgumentException("Ussser is not provided");
+                throw new ArgumentException("User is not provided");
+            }
+            if (string.IsNullOrEmpty(userDto.Email) || !userDto.Email.IsValidEmailAddress())
+            {
+                throw new ArgumentException("Email address is incorrect.");
             }
             var user = _mapper.Map<User>(userDto);
-            var result = await _userRepository.CreateAsync(user);
 
+            var result = await _userRepository.CreateAsync(user);
             if (result == null)
             {
-                _logger.LogError("UserService-GetUsersAsync : No user found");
+                _logger.LogError($"UserService-GetUsersAsync : User has not created for email {userDto.Email}");
                 response.AddError(ResponseCode.InternalError.ToString(), "User has not created");
                 return response;
             }
@@ -47,32 +52,24 @@ namespace Zip.WebAPI.Services
             return response;
         }
 
-        public async Task DeleteUserAsync(int id)
+        public async Task DeleteUserAsync(string email)
         {
-            await _userRepository.DeleteAsync(id);
-        }
-
-        public async Task<Response<UserDto>> GetUserByIdAsync(int id)
-        {
-            var response = new Response<UserDto>();
-            var result = await _userRepository.GetByIdAsync(id);
-            if (result == null)
+            if (String.IsNullOrEmpty(email) || !email.IsValidEmailAddress())
             {
-                _logger.LogError("UserService-GetUsersAsync : No user found");
-                response.AddError(ResponseCode.NotFound.ToString(), "No user found");
-            }
-            else
-            {
-                response.Data = _mapper.Map<UserDto>(result);
+                throw new ArgumentException("Email address is incorrect.");
             }
 
-            return response;
+            await _userRepository.DeleteAsync(email);
         }
 
         public async Task<Response<UserAcountDto>> GetUserByEmailAsync(string email)
         {
             var response = new Response<UserAcountDto>();
-            var result = await _userRepository.GetByUserByEmailAsync(email);
+            if (string.IsNullOrEmpty(email) || !email.IsValidEmailAddress())
+            {
+                throw new ArgumentException("Email address is incorrect.");
+            }
+            var result = await _userRepository.GetByEmailAsync(email);
             if (result == null)
             {
                 _logger.LogError("UserService-GetUsersAsync : No user found");
@@ -89,7 +86,7 @@ namespace Zip.WebAPI.Services
         public async Task<Response<List<UserDto>>> GetUsersAsync()
         {
             var response = new Response<List<UserDto>>();
-            var result = await _userRepository.GetUsersAsync();
+            var result = await _userRepository.GetAllAsync();
             if (result == null)
             {
                 _logger.LogError("UserService-GetUsersAsync : No user found");
@@ -109,7 +106,7 @@ namespace Zip.WebAPI.Services
             {
                 Name = result.Name,
                 Email = result.Email,
-                Acounts = _mapper.Map<List<AcountDto>>(result.Acounts)
+                Acounts = _mapper.Map<List<AcountTypeDto>>(result.Acounts)
             };
         }
     }

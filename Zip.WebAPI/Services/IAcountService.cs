@@ -7,7 +7,7 @@ namespace Zip.WebAPI.Services
 {
     public interface IAcountService
     {
-        Task<Response<List<AcountDto>>> GetAcountsByUserIdAsync(int userId);
-        Task<Response<AcountDto>> CreateAcountAsync(AcountDto acount);
+        Task<Response<List<AcountDto>>> GetAcountsByEmailAddressAsync(string email);
+        Task<Response<AcountDto>> CreateAcountAsync(AcountCreateDto acount);
     }
 }
