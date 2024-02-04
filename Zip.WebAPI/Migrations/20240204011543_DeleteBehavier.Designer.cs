@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Zip.WebAPI.Data;
 
@@ -10,9 +11,10 @@ using Zip.WebAPI.Data;
 namespace Zip.WebAPI.Migrations
 {
     [DbContext(typeof(ZipUserDBContext))]
-    partial class ZipUserDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240204011543_DeleteBehavier")]
+    partial class DeleteBehavier
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
