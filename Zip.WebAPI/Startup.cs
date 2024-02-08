@@ -30,7 +30,6 @@ namespace Zip.WebAPI
             services.AddDbContext<ZipUserDBContext>(options =>
             {
                 options.UseSqlServer(Configuration.GetConnectionString("SqlConnection"));
-                options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
             });
 
             var mapperConfig = new MapperConfiguration(mc =>

@@ -78,7 +78,7 @@ namespace Zip.WebAPI.Services
             var result = await _acountRepository.GetByUserEmailAsync(email);
             if (result == null)
             {
-                _logger.LogError("AcountService-CreateAcountAsync : No acount has found");
+                _logger.LogError("AcountService-GetAcountsByEmailAddressAsync : No acount has found");
                 response.AddError(ResponseCode.NotFound.ToString(), "No acount has found");
             }
             else

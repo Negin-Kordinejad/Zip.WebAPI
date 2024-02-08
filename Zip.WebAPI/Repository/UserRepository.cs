@@ -33,7 +33,7 @@ namespace Zip.WebAPI.Repository
 
         public async Task<List<User>> GetAllAsync()
         {
-            return await _zipUserDBContext.Users.ToListAsync();
+            return await _zipUserDBContext.Users.AsNoTracking().ToListAsync();
         }
 
         public async Task<User> CreateAsync(User user)
@@ -44,9 +44,23 @@ namespace Zip.WebAPI.Repository
             return user;
         }
 
+        public async Task<User> UpdateAsync(User user)
+        {
+            var userToUpdate = await _zipUserDBContext.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == user.Email.ToLower());
+            if (userToUpdate != null)
+            {
+                userToUpdate.Name = user.Name;
+                userToUpdate.Salary = user.Salary;
+                userToUpdate.Expenses = user.Expenses;
+            }
+            await _zipUserDBContext.SaveChangesAsync();
+
+            return userToUpdate;
+        }
+
         public async Task DeleteAsync(string email)
         {
-            var user = _zipUserDBContext.Users.Where(u => u.Email.ToLower()==email.ToLower())
+            var user = _zipUserDBContext.Users.Where(u => u.Email.ToLower() == email.ToLower())
                                               .FirstOrDefault();
             if (user != null)
             {

@@ -42,7 +42,7 @@ namespace Zip.WebAPI.Services
             var result = await _userRepository.CreateAsync(user);
             if (result == null)
             {
-                _logger.LogError($"UserService-GetUsersAsync : User has not created for email {userDto.Email}");
+                _logger.LogError($"UserService-CreateUserAsync : User has not created for email {userDto.Email}");
                 response.AddError(ResponseCode.InternalError.ToString(), "User has not created");
                 return response;
             }
@@ -62,6 +62,32 @@ namespace Zip.WebAPI.Services
             await _userRepository.DeleteAsync(email);
         }
 
+        public async Task<Response<UserDto>> UpdateUserAsync(UserDto userDto)
+        {
+            var response = new Response<UserDto>();
+            if (userDto == null)
+            {
+                _logger.LogError("UserService-UpdateUserAsync : ");
+                throw new ArgumentException("User is not provided");
+            }
+            if (string.IsNullOrEmpty(userDto.Email) || !userDto.Email.IsValidEmailAddress())
+            {
+                throw new ArgumentException("Email address is incorrect.");
+            }
+            var user = _mapper.Map<User>(userDto);
+
+            var result = await _userRepository.UpdateAsync(user);
+            if (result == null)
+            {
+                _logger.LogError($"UserService-UpdateUserAsync : User has not updated for email {userDto.Email}");
+                response.AddError(ResponseCode.InternalError.ToString(), "User has not Updated");
+                return response;
+            }
+
+            response.Data = _mapper.Map<UserDto>(result);
+
+            return response;
+        }
         public async Task<Response<UserAcountDto>> GetUserByEmailAsync(string email)
         {
             var response = new Response<UserAcountDto>();
@@ -72,7 +98,7 @@ namespace Zip.WebAPI.Services
             var result = await _userRepository.GetByEmailAsync(email);
             if (result == null)
             {
-                _logger.LogError("UserService-GetUsersAsync : No user found");
+                _logger.LogError("UserService-GetUserByEmailAsync : No user found");
                 response.AddError(ResponseCode.NotFound.ToString(), "No user found");
             }
             else

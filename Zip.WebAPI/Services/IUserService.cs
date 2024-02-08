@@ -10,6 +10,8 @@ namespace Zip.WebAPI.Services
         Task<Response<UserAcountDto>> GetUserByEmailAsync(string email);
         Task<Response<List<UserDto>>> GetUsersAsync();
         Task<Response<UserDto>> CreateUserAsync(UserDto user);
+
+        Task<Response<UserDto>> UpdateUserAsync(UserDto user);
         Task DeleteUserAsync(string email);
     }
 }

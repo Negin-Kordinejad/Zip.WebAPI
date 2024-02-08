@@ -39,25 +39,15 @@ namespace Zip.WebAPI.Middlewares
                     errorResponse.AddError(ResponseErrorCodeConstants.ArgumentException.ToString(), exception.Message);
                     context.Response.StatusCode = StatusCodes.Status400BadRequest;
                     break;
-
                 case DbUpdateException:
-                    if (exception.InnerException.Message.Contains("Email"))
+                    if (exception.InnerException.Message.Contains("IX_User_Email"))
                     {
-                        errorResponse.AddError(ResponseErrorCodeConstants.ArgumentException.ToString(), "A Uuer with the email address is already exixsts");
+                        errorResponse.AddError(ResponseErrorCodeConstants.ArgumentException.ToString(), "The email address is already used");
                         context.Response.StatusCode = StatusCodes.Status400BadRequest;
                     }
-                    else if (exception.InnerException.Message.Contains("unigue"))
-                    {
                         errorResponse.AddError(ResponseErrorCodeConstants.ArgumentException.ToString(), "There is an issue with data oprations");
                         context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                    }
-                    else if (exception.InnerException.Message.Contains("unigue"))
-                    {
-                        errorResponse.AddError(ResponseErrorCodeConstants.ArgumentException.ToString(), "");
-                        context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                    }
                     break;
-
                 default:
                     if (exception.Message.Contains("already being tracked"))
                     {
