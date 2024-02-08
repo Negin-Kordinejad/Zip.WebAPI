@@ -35,5 +35,23 @@ namespace Zip.Tests.Fakes
             return instance;
         }
 
+        internal static Mock<IUserRepository> ConfigureUpdatesyncToSaveAndReturnUser(
+        this Mock<IUserRepository> instance, User userToSave)
+        {
+            instance.Setup(x => x.CreateAsync(It.IsAny<User>()))
+                .ReturnsAsync(() => UserFixtures.UpdateUser(userToSave));
+
+            return instance;
+        }
+
+        internal static Mock<IUserRepository> ConfigureRemovesync(
+       this Mock<IUserRepository> instance, string email)
+        {
+            instance.Setup(x => x.DeleteAsync(It.IsAny<string>()))
+                .Callback(() => UserFixtures.RemoveUser(email));
+
+            return instance;
+        }
+
     }
 }

@@ -61,12 +61,27 @@ namespace Zip.Tests.Fixtures
             return user;
         }
 
-        public static void RemoveUser(int userId)
+        public static User UpdateUser(User userToUpdate)
         {
-            var deleteUser = users.Where(u => u.Id == userId).FirstOrDefault();
+
+            if (userToUpdate == null || !users.Any(u => u.Email.ToLower() == userToUpdate.Email.ToLower()))
+                return null;
+
+            foreach (var user in users.Where(u => u.Email.ToLower() == userToUpdate.Email.ToLower()))
+            {
+                user.Name = user.Name;
+                user.Salary = user.Salary;
+                user.Expenses = user.Expenses;
+            }
+            return userToUpdate;
+        }
+
+        public static void RemoveUser(string email)
+        {
+            var deleteUser = users.Where(u => u.Email.ToLower() == email.ToLower()).FirstOrDefault();
             if (deleteUser != null)
             {
-                users.Remove(deleteUser);
+                var result = users.RemoveAll(r => r.Email.ToLower() == email.ToLower());
             }
         }
         private static Fixture GetFixture()
