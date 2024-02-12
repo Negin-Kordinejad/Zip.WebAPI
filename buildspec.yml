@@ -13,7 +13,7 @@ phases:
 
   post_build:
     commands:
-      - dotnet publish -c Release -o  ./Zip.WebAPI/Zip.WebAPI.csproj
+      - dotnet publish -c Release -o  /Zip.WebAPI/Zip.WebAPI.csproj
       
 artifacts:
   files:
