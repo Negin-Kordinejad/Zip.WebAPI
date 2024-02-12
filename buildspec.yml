@@ -8,13 +8,12 @@ phases:
 
   build:
     commands:
-       - dotnet test Zip.Tests/Zip.Tests.csproj
-       - dotnet build Zip.WebAPI/Zip.WebAPI.csproj
+      - dotnet test Zip.Tests/Zip.Tests.csproj
+      - dotnet build Zip.WebAPI/Zip.WebAPI.csproj
 
   post_build:
     commands:
-      - echo Publish started on `date`
-      - dotnet publish -c Release -o ./ Zip.WebAPI/Zip.WebAPI.csproj
+      - dotnet publish -c Release -o  ~/Zip.WebAPI/Zip.WebAPI.csproj
       
 artifacts:
   files:
