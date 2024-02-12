@@ -14,8 +14,8 @@ phases:
   post_build:
     commands:
       - echo Publish started on `date`
-      - dotnet publish -c Release -r linux-x64 -o ./Zip.WebAPI/Zip.WebAPI.csproj
+      - dotnet publish -c Release  -o ./Zip.WebAPI/Zip.WebAPI.csproj
       
 artifacts:
   files:
-    - ./**/*
+    - '**/*'
