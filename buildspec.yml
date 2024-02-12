@@ -1,10 +1,21 @@
 version: 0.2
 
 phases:
+  pre_build:
+    commands:
+      - echo Restore started on `date`
+      - dotnet restore Zip.WebAPI/Zip.WebAPI.csproj
+
   build:
     commands:
-      - dotnet restore
-      - dotnet build
+       - dotnet test Zip.Tests/Zip.Tests.csproj
+       - dotnet build Zip.WebAPI/Zip.WebAPI.csproj
+
+  post_build:
+    commands:
+      - echo Publish started on `date`
+      - dotnet publish -c Release -r linux-x64 -o ./Zip.WebAPI/Zip.WebAPI.csproj
+      
 artifacts:
   files:
     - ./**/*
