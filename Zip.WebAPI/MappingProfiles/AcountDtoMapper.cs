@@ -9,7 +9,8 @@ namespace Zip.WebAPI.MappingProfiles
         public AcountDtoMapper()
         {
             CreateMap<Acount, AcountDto>();
-            CreateMap<AcountDto, Acount>().ForMember(dest => dest.User, opt => opt.Ignore()); ;
+            CreateMap<AcountDto, Acount>().ForMember(dest => dest.User, opt => opt.Ignore());
+            CreateMap<Acount, AcountTypeDto>();
         }
     }
 }

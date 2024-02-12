@@ -1,18 +1,13 @@
 ﻿using AutoFixture;
-using Microsoft.IdentityModel.Tokens;
 using System.Collections.Generic;
 using System.Linq;
 using Zip.WebAPI.Models;
-using Zip.WebAPI.Models.Dto;
 
 
 namespace Zip.Tests.Fixtures
 {
     internal static class UserFixtures
     {
-        
-      
-
         internal static User NoCreditUserId1NoAcount = GetFixture().Build<User>()
         .With(x => x.Id, 1)
         .With(x => x.Name, "TestUser1")
@@ -21,7 +16,7 @@ namespace Zip.Tests.Fixtures
         .With(x => x.Expenses, 400)
         .Without(x => x.Acounts)
         .Create();
-       
+
         internal static User CreditUserId2NoAcount = GetFixture().Build<User>()
        .With(x => x.Id, 2)
        .With(x => x.Name, "TestUser2")
@@ -58,26 +53,42 @@ namespace Zip.Tests.Fixtures
 
         public static User AddUser(User user)
         {
-            if (user != null)
+            if (user == null || users.Any(u => u.Email.ToLower() == user.Email.ToLower()))
             {
-                users.Add(user);
+                return null;
             }
+            users.Add(user);
             return user;
         }
 
-        public static void RemoveUser(int userId)
+        public static User UpdateUser(User userToUpdate)
         {
-            var deleteUser = users.Where(u => u.Id == userId).FirstOrDefault();
+
+            if (userToUpdate == null || !users.Any(u => u.Email.ToLower() == userToUpdate.Email.ToLower()))
+                return null;
+
+            foreach (var user in users.Where(u => u.Email.ToLower() == userToUpdate.Email.ToLower()))
+            {
+                user.Name = user.Name;
+                user.Salary = user.Salary;
+                user.Expenses = user.Expenses;
+            }
+            return userToUpdate;
+        }
+
+        public static void RemoveUser(string email)
+        {
+            var deleteUser = users.Where(u => u.Email.ToLower() == email.ToLower()).FirstOrDefault();
             if (deleteUser != null)
             {
-                users.Remove(deleteUser);
+                var result = users.RemoveAll(r => r.Email.ToLower() == email.ToLower());
             }
         }
         private static Fixture GetFixture()
         {
             var fixture = new Fixture();
-            fixture.Behaviors.OfType<ThrowingRecursionBehavior>().ToList() .ForEach(b => fixture.Behaviors.Remove(b)); fixture.Behaviors.Add(new OmitOnRecursionBehavior());
-          return fixture;
+            fixture.Behaviors.OfType<ThrowingRecursionBehavior>().ToList().ForEach(b => fixture.Behaviors.Remove(b)); fixture.Behaviors.Add(new OmitOnRecursionBehavior());
+            return fixture;
         }
     }
 }

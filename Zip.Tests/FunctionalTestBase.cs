@@ -6,7 +6,6 @@ using Zip.WebAPI.MappingProfiles;
 using Zip.WebAPI.Repository;
 using Zip.WebAPI.Services;
 
-
 namespace Zip.Tests
 {
     public class FunctionalTestBase
@@ -22,7 +21,6 @@ namespace Zip.Tests
         protected AcountService AcountService;
         protected IMapper Mapper;
 
-
         [TestInitialize]
         public void Initialize()
         {
@@ -33,8 +31,7 @@ namespace Zip.Tests
             });
             Mapper = mapperConfig.CreateMapper();
             UserService = new UserService(_loggerUser.Object, Mapper, _userRepository.Object);
-            AcountService = new AcountService(_loggerAcount.Object, Mapper, _acountRepository.Object, _creditValidator.Object);
-
+            AcountService = new AcountService(_loggerAcount.Object, Mapper, _acountRepository.Object, _userRepository.Object, _creditValidator.Object);
         }
     }
 }

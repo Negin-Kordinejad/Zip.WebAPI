@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
+using Zip.WebAPI.Models;
 using Zip.WebAPI.Models.Dto;
 using Zip.WebAPI.Models.Responses;
 
@@ -17,13 +18,12 @@ namespace Zip.WebAPI.Services
             _userService = userService;
         }
 
-        public async Task<ValidateUserCreditResponseData> ValidateAsync(int userId)
+        public async Task<ValidateUserCreditResponseData> ValidateAsync(User user)
         {
             var result = new ValidateUserCreditResponseData { IsValid = false };
             _logger.LogInformation("CreditValidator_ValidateAsync attemting....");
-            var response = await _userService.GetUserByIdAsync(userId);
 
-            if (response == null || !response.IsSuccessful || !HashCredit(response.Data))
+            if (!HashCredit(user))
             {
                 result.IsValid = false;
                 return result;
@@ -35,7 +35,7 @@ namespace Zip.WebAPI.Services
 
         }
 
-        private bool HashCredit(UserDto user)
+        private bool HashCredit(User user)
         {
             return ((user.Salary - user.Expenses) > Zip_USER_CREDIT_TO_HAVE_ACOUNT);
         }

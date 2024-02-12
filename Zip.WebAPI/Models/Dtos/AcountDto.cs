@@ -1,12 +1,7 @@
 ﻿namespace Zip.WebAPI.Models.Dto
 {
-    public class AcountDto
+    public class AcountDto : AcountTypeDto
     {
-        public int Id { get; set; }
-
-        public int UserId { get; set; }
-
-        public string Type { get; set; }
-
+        public string UserId { get; set; }
     }
 }

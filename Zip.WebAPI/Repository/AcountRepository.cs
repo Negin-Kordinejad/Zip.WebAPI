@@ -24,9 +24,9 @@ namespace Zip.WebAPI.Repository
             return acount;
         }
 
-        public async Task<List<Acount>> GetAcountsByUserIdAsync(int userId)
+        public async Task<List<Acount>> GetByUserEmailAsync(string email)
         {
-            return await _zipUserDBContext.Acounts.Where(a => a.UserId == userId).ToListAsync();
+            return await _zipUserDBContext.Acounts.Where(a => a.User.Email.ToLower() == email.ToLower()).ToListAsync();
         }
     }
 }

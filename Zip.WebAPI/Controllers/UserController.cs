@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Threading.Tasks;
 using Zip.WebAPI.Models.Dto;
+using Zip.WebAPI.Models.Enums;
+using Zip.WebAPI.Models.Responses;
 using Zip.WebAPI.Services;
 
 namespace Zip.WebAPI.Controllers
@@ -22,30 +25,43 @@ namespace Zip.WebAPI.Controllers
         [HttpGet("All")]
         public async Task<IActionResult> GetAllUsers()
         {
-            var result = await _userService.GetUsersAsync();
-            if (result.IsSuccessful == false)
+            var response = await _userService.GetUsersAsync();
+            if (response.IsSuccessful == false)
             {
-                return BadRequest(result.ErrorMessages);
+                string errorCode = response.ErrorMessages[0].ErrorCode;
+
+                if (errorCode == ResponseCode.NotFound.ToString())
+                {
+                    return NotFound(response.ErrorMessages);
+                }
+
             }
-            return Ok(result.Data);
+            return Ok(response);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        [HttpGet("{emailAddress}")]
+        public async Task<IActionResult> GetByEmailAddressId(string emailAddress)
         {
-            var result = await _userService.GetUserByIdAsync(id);
-            if (result.IsSuccessful == false)
+            var response = await _userService.GetUserByEmailAsync(emailAddress);
+            if (response.IsSuccessful == false)
             {
-                return BadRequest(result.ErrorMessages);
+                string errorCode = response.ErrorMessages[0].ErrorCode;
+
+                if (errorCode == ResponseCode.NotFound.ToString())
+                {
+                    return NotFound(response.ErrorMessages);
+                }
+
+                return BadRequest(response.ErrorMessages);
             }
 
-            return Ok(result);
+            return Ok(response);
         }
 
         [HttpPost("Add")]
-        public async Task<IActionResult> CreateUser([FromBody] UserDto value)
+        public async Task<IActionResult> CreateUser([FromBody] UserDto user)
         {
-            var result = await _userService.CreateUserAsync(value);
+            var result = await _userService.CreateUserAsync(user);
             if (result.IsSuccessful == false)
             {
                 return BadRequest(result.ErrorMessages);
@@ -54,10 +70,22 @@ namespace Zip.WebAPI.Controllers
             return Ok(result);
         }
 
-        [HttpPost("Remove")]
-        public async Task DeleteUser(int id)
+        [HttpPatch("Update")]
+        public async Task<IActionResult> UpdateUser([FromBody] UserDto user)
         {
-            await _userService.DeleteUserAsync(id);
+            var result = await _userService.UpdateUserAsync(user);
+            if (result.IsSuccessful == false)
+            {
+                return BadRequest(result.ErrorMessages);
+            }
+
+            return Created(new Uri($"//User//Update//{user}"), result.Data);
+        }
+
+        [HttpPost("Remove")]
+        public async Task DeleteUser(string emailAddress)
+        {
+            await _userService.DeleteUserAsync(emailAddress);
         }
     }
 }

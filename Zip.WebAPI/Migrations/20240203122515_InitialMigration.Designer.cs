@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Zip.WebAPI.Data;
 
@@ -10,9 +11,10 @@ using Zip.WebAPI.Data;
 namespace Zip.WebAPI.Migrations
 {
     [DbContext(typeof(ZipUserDBContext))]
-    partial class ZipUserDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240203122515_InitialMigration")]
+    partial class InitialMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -81,7 +83,6 @@ namespace Zip.WebAPI.Migrations
                     b.HasOne("Zip.WebAPI.Models.User", "User")
                         .WithMany("Acounts")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");

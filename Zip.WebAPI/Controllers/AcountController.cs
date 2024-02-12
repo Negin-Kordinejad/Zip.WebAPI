@@ -21,10 +21,10 @@ namespace Zip.WebAPI.Controllers
             _acountService = acountService;
         }
 
-        [HttpGet("{userId}")]
-        public async Task<IActionResult> GetByUserId(int userId)
+        [HttpGet("{emailAddress}")]
+        public async Task<IActionResult> GetByUserId(string emailAddress)
         {
-            var response = await _acountService.GetAcountsByUserIdAsync(userId);
+            var response = await _acountService.GetAcountsByEmailAddressAsync(emailAddress);
             if (!response.IsSuccessful)
             {
                 string errorCode = response.ErrorMessages[0].ErrorCode;
@@ -33,13 +33,18 @@ namespace Zip.WebAPI.Controllers
                 {
                     return NotFound(response.ErrorMessages);
                 }
+
+                if (errorCode == ResponseCode.BadRequest.ToString())
+                {
+                    return BadRequest(response.ErrorMessages);
+                }
             }
 
-            return Ok(response.Data);
+            return Ok(response);
         }
 
         [HttpPost("Create")]
-        public async Task<IActionResult> Post([FromBody] AcountDto acount)
+        public async Task<IActionResult> Post([FromBody] AcountCreateDto acount)
         {
             var response = await _acountService.CreateAcountAsync(acount);
             if (!response.IsSuccessful)
@@ -50,9 +55,13 @@ namespace Zip.WebAPI.Controllers
                 {
                     return NotFound(response.ErrorMessages);
                 }
+                if (errorCode == ResponseCode.BadRequest.ToString())
+                {
+                    return BadRequest(response.ErrorMessages);
+                }
             }
 
-            return Ok(response.Data);
+            return Ok(response);
         }
     }
 }

@@ -8,11 +8,11 @@ namespace Zip.Tests.Fakes
 {
     internal static class UserRepositoryFake
     {
-        internal static Mock<IUserRepository> ConfigureGetUserByIdAsyncToReturnUser(
-            this Mock<IUserRepository> instance, int userId)
+        internal static Mock<IUserRepository> ConfigureGetUserByEmailAsyncToReturnUser(
+            this Mock<IUserRepository> instance, string email)
         {
-            instance.Setup(x => x.GetByIdAsync(It.Is<int>(p => p == userId)))
-                .ReturnsAsync(() => UserFixtures.Users.FirstOrDefault(user => user.Id == userId));
+            instance.Setup(x => x.GetByEmailAsync(It.Is<string>(p => p == email)))
+                .ReturnsAsync(() => UserFixtures.Users.FirstOrDefault(user => user.Email.ToLower() == email.ToLower()));
 
             return instance;
         }
@@ -20,7 +20,7 @@ namespace Zip.Tests.Fakes
         internal static Mock<IUserRepository> ConfigureGetUsersAsyncToReturnUsers(
            this Mock<IUserRepository> instance)
         {
-            instance.Setup(x => x.GetUsersAsync())
+            instance.Setup(x => x.GetAllAsync())
                 .ReturnsAsync(() => UserFixtures.Users);
 
             return instance;
@@ -31,6 +31,24 @@ namespace Zip.Tests.Fakes
         {
             instance.Setup(x => x.CreateAsync(It.IsAny<User>()))
                 .ReturnsAsync(() => UserFixtures.AddUser(userToSave));
+
+            return instance;
+        }
+
+        internal static Mock<IUserRepository> ConfigureUpdatesyncToSaveAndReturnUser(
+        this Mock<IUserRepository> instance, User userToSave)
+        {
+            instance.Setup(x => x.CreateAsync(It.IsAny<User>()))
+                .ReturnsAsync(() => UserFixtures.UpdateUser(userToSave));
+
+            return instance;
+        }
+
+        internal static Mock<IUserRepository> ConfigureRemovesync(
+       this Mock<IUserRepository> instance, string email)
+        {
+            instance.Setup(x => x.DeleteAsync(It.IsAny<string>()))
+                .Callback(() => UserFixtures.RemoveUser(email));
 
             return instance;
         }

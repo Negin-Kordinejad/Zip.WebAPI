@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Zip.WebAPI.Models;
 using Zip.WebAPI.Models.Responses;
 
 namespace Zip.WebAPI.Middlewares
@@ -33,6 +32,7 @@ namespace Zip.WebAPI.Middlewares
         private async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             var errorResponse = new UserResponse();
+
             switch (exception)
             {
                 case ArgumentException:
@@ -40,19 +40,15 @@ namespace Zip.WebAPI.Middlewares
                     context.Response.StatusCode = StatusCodes.Status400BadRequest;
                     break;
                 case DbUpdateException:
-                    if (exception.InnerException.Message.Contains("Email"))
+                    if (exception.InnerException.Message.Contains("IX_User_Email"))
                     {
-                        errorResponse.AddError(ResponseErrorCodeConstants.ArgumentException.ToString(), "Email address is used for another user");
+                        errorResponse.AddError(ResponseErrorCodeConstants.ArgumentException.ToString(), "The email address is already used");
                         context.Response.StatusCode = StatusCodes.Status400BadRequest;
                     }
-                    else if (exception.InnerException.Message.Contains("unigue"))
-                    {
                         errorResponse.AddError(ResponseErrorCodeConstants.ArgumentException.ToString(), "There is an issue with data oprations");
                         context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                    }
                     break;
                 default:
-
                     if (exception.Message.Contains("already being tracked"))
                     {
                         errorResponse.AddError(ResponseErrorCodeConstants.ArgumentException.ToString(), "Record is already exists");

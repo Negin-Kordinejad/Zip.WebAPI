@@ -1,7 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Zip.Tests.Fakes;
+using Zip.Tests.Fixtures;
 using Zip.WebAPI.Models;
 using Zip.WebAPI.Models.Dto;
 
@@ -11,30 +13,30 @@ namespace Zip.Tests.Functional
     public class UserServiceTest : FunctionalTestBase
     {
         [TestMethod]
-        [DynamicData(nameof(ApplyDateForUserIdsTestCases))]
-        public async Task GetUserByIdAsync_When_Found_ReturnUserSuccessFulResponce(int id)
+        [DynamicData(nameof(ApplyDateForUserEmailTestCases))]
+        public async Task GetUserByEmailAsync_When_Found_ReturnUserSuccessFulResponce(string email)
         {
             //Arrange
-            _userRepository.ConfigureGetUserByIdAsyncToReturnUser(id);
+            _userRepository.ConfigureGetUserByEmailAsyncToReturnUser(email);
 
             //Act
-            var result = await UserService.GetUserByIdAsync(id);
+            var result = await UserService.GetUserByEmailAsync(email);
 
             //Assert
             Assert.IsTrue(result.IsSuccessful);
-            Assert.AreEqual(id, result.Data.Id);
+            Assert.IsNotNull(result.Data);
 
         }
 
         [TestMethod]
-        [DynamicData(nameof(ApplyDateForNotExistUserIdsTestCases))]
-        public async Task GetUserByIdAsync_When_NotFound_ReturnNotUnsuccessfulresponce(int id)
+        [DynamicData(nameof(ApplyDateForNotExistUserEmailTestCases))]
+        public async Task GetUserByIdAsync_When_NotFound_ReturnNotUnsuccessfulresponce(string email)
         {
             //Arrange
-            _userRepository.ConfigureGetUserByIdAsyncToReturnUser(id);
+            _userRepository.ConfigureGetUserByEmailAsyncToReturnUser(email);
 
             //Act
-            var result = await UserService.GetUserByIdAsync(id);
+            var result = await UserService.GetUserByEmailAsync(email);
 
             //Assert
             Assert.IsFalse(result.IsSuccessful);
@@ -52,7 +54,7 @@ namespace Zip.Tests.Functional
 
             //Assert
             Assert.IsTrue(result.IsSuccessful);
-            Assert.AreEqual(userDto.Id, result.Data.Id);
+            Assert.AreEqual(userDto.Name, result.Data.Name);
             Assert.AreEqual(userDto.Email, result.Data.Email);
 
         }
@@ -73,27 +75,79 @@ namespace Zip.Tests.Functional
 
         }
 
+        [TestMethod]
+        [DynamicData(nameof(ApplyDataForUpdateUsersExistingEmailTestCases))]
+        public async Task UpdateUserAsync_When_User_Existing_Return_SuccessfulUserResponce(UserDto user)
+        {
+            //Arrange
 
-        private static IEnumerable<object[]> ApplyDateForUserIdsTestCases
+            _userRepository.ConfigureUpdatesyncToSaveAndReturnUser(Mapper.Map<User>(user));
+
+            //Act
+            var result = await UserService.CreateUserAsync(user);
+
+            //Assert
+            Assert.IsTrue(result.IsSuccessful);
+            Assert.AreEqual(user.Name, result.Data.Name);
+            Assert.AreEqual(user.Email, result.Data.Email);
+            Assert.AreEqual(user.Salary, result.Data.Salary);
+            Assert.AreEqual(user.Expenses, result.Data.Expenses);
+
+        }
+
+        [TestMethod]
+        [DynamicData(nameof(ApplyDataForUpdateUsersNoExistingEmailTestCases))]
+        public async Task UpdateUserAsync_When_User_Not_Existing_Return_UnSuccessfulResponce(UserDto user)
+        {
+            //Arrange
+
+            _userRepository.ConfigureUpdatesyncToSaveAndReturnUser(Mapper.Map<User>(user));
+
+            //Act
+            var result = await UserService.CreateUserAsync(user);
+
+            //Assert
+            Assert.IsFalse(result.IsSuccessful);
+
+        }
+
+        [Ignore]
+        [TestMethod]
+        [DynamicData(nameof(ApplyDataForRemoveUsersExistingEmailTestCases))]
+        public async Task DeleteUserAsync_When_User_Existing_Return_SuccessfulUserResponce(string emailAddress)
+        {
+            //Arrange
+
+            _userRepository.ConfigureRemovesync(emailAddress);
+
+            //Act
+            await UserService.DeleteUserAsync(emailAddress);
+
+            //Assert
+            Assert.IsFalse(UserFixtures.Users.Any(u => u.Email.ToLower() == emailAddress.ToLower()));
+
+        }
+
+        private static IEnumerable<object[]> ApplyDateForUserEmailTestCases
         {
             get
             {
                 return new[]
                 {
-                    new object[] { 1},
-                    new object[] { 4}
+                    new object[] { "tuser1@zip.com"},
+                    new object[] { "tuser3@zip.com"}
                 };
             }
         }
 
-        private static IEnumerable<object[]> ApplyDateForNotExistUserIdsTestCases
+        private static IEnumerable<object[]> ApplyDateForNotExistUserEmailTestCases
         {
             get
             {
                 return new[]
                 {
-                    new object[] { 0},
-                    new object[] { 20}
+                    new object[] { "xyz@gmail.com"},
+                    new object[] { "Z@zip.com"}
                 };
             }
         }
@@ -104,8 +158,8 @@ namespace Zip.Tests.Functional
             {
                 return new[]
                 {
-                   new object[]{  new UserDto { Id = 5, Name = "TestUser5", Email = "testuser5@zip.com", Salary = 5000, Expenses = 3000 } },
-                   new object[]{ new UserDto { Id = 10, Name = "TestUser10", Email = "testuser10@zip.com", Salary = 3000, Expenses = 500 } }
+                   new object[]{  new UserDto { Name = "TestUser5", Email = "testuser5@zip.com", Salary = 5000, Expenses = 3000 } },
+                   new object[]{ new UserDto { Name = "TestUser10", Email = "testuser10@zip.com", Salary = 3000, Expenses = 500 } }
                 };
             }
         }
@@ -116,46 +170,46 @@ namespace Zip.Tests.Functional
             {
                 return new[]
                 {
-                     new object[]{new UserDto{Id=5,Name="TestUser5",Email="testuser1@zip.com",Salary=7000,Expenses=3000} },
-                     new object[]{new UserDto{Id=10,Name="TestUser10",Email="testuser4@zip.com",Salary=9000,Expenses=500} }
+                   new object[]{  new UserDto { Name = "tUser5", Email = "tuser1@zip.com", Salary = 5000, Expenses = 3000 } },
+                   new object[]{ new UserDto { Name = "TestUser10", Email = "tuser3@zip.com", Salary = 3000, Expenses = 500 } }
                 };
             }
         }
-        //private static IEnumerable<object[]> ApplyDataForPassengersNoNameTestCases
-        //{
-        //    get
-        //    {
-        //        return new[]
-        //        {
-        //            new object[] { 3, null },
-        //            new object[] { 2, null },
-        //            new object[] { 5, null }
-        //        };
-        //    }
-        //}
 
-        //private static IEnumerable<object[]> ApplyDataForPassengersAndNameTestCases
-        //{
-        //    get
-        //    {
-        //        return new[]
-        //        {
-        //            new object[] { 3, "sedan" },
-        //            new object[] { 2, "hatchBack" },
-        //            new object[] { 5, "suv" }
-        //        };
-        //    }
-        //}
+        private static IEnumerable<object> ApplyDataForUpdateUsersExistingEmailTestCases
+        {
+            get
+            {
+                return new[]
+                {
+                   new object[]{  new UserDto { Name = "Martin", Email = "tuser1@zip.com", Salary = 5000, Expenses = 3000 } },
+                   new object[]{ new UserDto { Name = "TestUser10", Email = "tuser3@zip.com", Salary = 5000, Expenses = 500 } }
+                };
+            }
+        }
 
-        //private static IEnumerable<object[]> ApplyDataForThreePassengersAndNameSedanTestCases
-        //{
-        //    get
-        //    {
-        //        return new[]
-        //        {
-        //            new object[] { 3, "sedan" }
-        //        };
-        //    }
-        //}
+        private static IEnumerable<object> ApplyDataForUpdateUsersNoExistingEmailTestCases
+        {
+            get
+            {
+                return new[]
+                {
+                   new object[]{  new UserDto { Name = "Martin", Email = "t@zip.com", Salary = 5000, Expenses = 3000 } },
+                   new object[]{ new UserDto { Name = "TestUser10", Email = "tx@zip.com", Salary = 5000, Expenses = 500 } }
+                };
+            }
+        }
+
+        private static IEnumerable<object[]> ApplyDataForRemoveUsersExistingEmailTestCases
+        {
+            get
+            {
+                return new[]
+                {
+                    new object[] { "tuser1@zip.com"},
+                    new object[] { "tuser3@zip.com" }
+                };
+            }
+        }
     }
 }

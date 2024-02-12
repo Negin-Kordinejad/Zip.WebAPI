@@ -9,8 +9,7 @@ namespace Zip.WebAPI.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite("DataSource=:memory:", x => { });
-            // optionsBuilder.UseInMemoryDatabase("ZipAcount");
+            optionsBuilder.UseSqlServer("Data Source=(localDb)\\MSSQLLocalDb;initial Catalog=ZipUserManagement");
         }
         public DbSet<User> Users { get; set; }
         public DbSet<Acount> Acounts { get; set; }
@@ -29,7 +28,7 @@ namespace Zip.WebAPI.Data
             modelBuilder.Entity<Acount>(entity =>
             {
                 entity.ToTable("Acount");
-                entity.HasOne(n => n.User).WithMany(m => m.Acounts).HasForeignKey(e => e.UserId).OnDelete(DeleteBehavior.ClientSetNull);
+                entity.HasOne(n => n.User).WithMany(m => m.Acounts).HasForeignKey(e => e.UserId).OnDelete(DeleteBehavior.Cascade);
                 entity.HasKey(e => new { e.Id });
                 entity.Property(p => p.Type).IsRequired();
             }

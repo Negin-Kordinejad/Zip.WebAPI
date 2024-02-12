@@ -8,10 +8,12 @@ namespace Zip.WebAPI.Models
         [Key]
         public int Id { get; set; }
         [Required]
+        [MaxLength(50)]
         public string Name { get; set; }
         
         [Required]
         [EmailAddress]
+        [MaxLength(50)]
         [Display(Name="Email Address")]
         public string Email { get; set; }
 

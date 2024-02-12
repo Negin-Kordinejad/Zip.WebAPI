@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Linq;
 using Zip.WebAPI.Data;
 using Zip.WebAPI.MappingProfiles;
 using Zip.WebAPI.Middlewares;
@@ -26,18 +27,10 @@ namespace Zip.WebAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var contextOptions = new DbContextOptionsBuilder<ZipUserDBContext>()
-                .UseSqlite(Configuration.GetConnectionString("DefaultConnection")).Options;
-
-            var dbContext = new ZipUserDBContext(contextOptions);
-            dbContext.Database.OpenConnection();
-            dbContext.Database.EnsureDeleted();
-            dbContext.Database.EnsureCreated();
-            dbContext.Database.OpenConnection();
-            dbContext.Users.AddRange(UserDataProvider.Get());
-            dbContext.SaveChanges();
-
-            services.AddSingleton<ZipUserDBContext>(dbContext);
+            services.AddDbContext<ZipUserDBContext>(options =>
+            {
+                options.UseSqlServer(Configuration.GetConnectionString("SqlConnection"));
+            });
 
             var mapperConfig = new MapperConfiguration(mc =>
             {
@@ -57,7 +50,7 @@ namespace Zip.WebAPI
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ZipUserDBContext dbContext)
         {
             if (env.IsDevelopment())
             {
@@ -65,11 +58,15 @@ namespace Zip.WebAPI
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+            if (dbContext.Users.Count() == 0)
+            {
+                dbContext.Database.EnsureCreated();
+                dbContext.AddRange(UserDataProvider.Get());
+                dbContext.SaveChanges();
+            }
 
             app.UseHttpsRedirection();
-
             app.UseRouting();
-
             app.UseAuthorization();
             app.UseGlobalErrorHandlingMiddleware();
             app.UseEndpoints(endpoints =>
